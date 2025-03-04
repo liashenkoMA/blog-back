@@ -30,16 +30,6 @@ export class AuthService {
 
     return {
       access_token: jwt,
-      name: user.name,
-      familyName: user.familyName,
-      avatarLink: user.avatarLink,
-      telegram: user.telegram,
-      vk: user.vk,
-      gitHub: user.gitHub,
-      linkedin: user.linkedin,
-      mySite: user.mySite,
-      city: user.city,
-      yearFooter: user.yearFooter,
     };
   }
 }
