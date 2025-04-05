@@ -1,8 +1,11 @@
 import {
   Controller,
   FileTypeValidator,
+  Get,
+  Param,
   ParseFilePipe,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -39,5 +42,10 @@ export class FileController {
       filePath: `${process.env.URL_UPLOADIMG}/images/upload/${file.filename}`,
     };
     return filePath;
+  }
+
+  @Get('upload/:filename')
+  getImages(@Param('filename') filename, @Res() res) {
+    res.sendFile(filename, { root: './uploads' });
   }
 }

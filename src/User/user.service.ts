@@ -41,6 +41,7 @@ export class UserService {
 
     return {
       name: user[0].name,
+      email:user[0].email,
       familyName: user[0].familyName,
       avatarLink: user[0].avatarLink,
       telegram: user[0].telegram,
