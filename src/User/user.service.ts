@@ -36,6 +36,7 @@ export class UserService {
 
     return createUser.save();
   }
+  
   async getUser() {
     const user = await this.userModel.find({ email: process.env.EMAIL }).exec();
 
