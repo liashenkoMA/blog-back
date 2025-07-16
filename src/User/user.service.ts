@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './user.schema';
@@ -36,13 +40,13 @@ export class UserService {
 
     return createUser.save();
   }
-  
+
   async getUser() {
     const user = await this.userModel.find({ email: process.env.EMAIL }).exec();
 
     return {
       name: user[0].name,
-      email:user[0].email,
+      email: user[0].email,
       familyName: user[0].familyName,
       avatarLink: user[0].avatarLink,
       telegram: user[0].telegram,
@@ -60,7 +64,11 @@ export class UserService {
       .findOne({ email: process.env.EMAIL })
       .exec();
 
-    return this.userModel.updateOne(
+    if (!user) {
+      throw new UnauthorizedException('Пользователь не найден');
+    }
+
+    const updatedUser = await this.userModel.findOneAndUpdate(
       { email: process.env.EMAIL },
       {
         $set: {
@@ -73,6 +81,17 @@ export class UserService {
           yearFooter: userData.yearFooter,
         },
       },
+      { new: true },
     );
+
+    return {
+      avatarLink: updatedUser.avatarLink,
+      telegram: updatedUser.telegram,
+      vk: updatedUser.vk,
+      gitHub: updatedUser.gitHub,
+      linkedin: updatedUser.linkedin,
+      city: updatedUser.city,
+      yearFooter: updatedUser.yearFooter,
+    };
   }
 }

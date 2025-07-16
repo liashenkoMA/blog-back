@@ -36,7 +36,7 @@ export class User {
   city: string;
 
   @Prop()
-  yearFooter: number;
+  yearFooter: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
