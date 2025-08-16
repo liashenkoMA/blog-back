@@ -1,5 +1,5 @@
 export class ArticleDTO {
-  url: string;
+  slug: string;
   title: string;
   description: string;
   category: string;

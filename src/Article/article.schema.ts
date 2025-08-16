@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema()
 export class Article extends Document {
   @Prop({ required: true })
-  url: string;
+  slug: string;
 
   @Prop({ required: true })
   title: string;

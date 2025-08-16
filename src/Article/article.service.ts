@@ -15,7 +15,7 @@ export class ArticleService {
     return await newArticle.save();
   }
 
-  async getArticleCategories() {
+  async getArticleCategories(): Promise<string[]> {
     const articleCategories = await this.articleModel
       .distinct('category')
       .exec();
@@ -24,7 +24,12 @@ export class ArticleService {
   }
 
   async getArticle(id: string): Promise<Article | null> {
-    const article = await this.articleModel.findOne({ url: id }).exec();
+    const article = await this.articleModel.findOne({ slug: id }).exec();
     return article;
+  }
+
+  async getArticles(): Promise<Article[]> {
+    const articles = await this.articleModel.find().exec();
+    return articles;
   }
 }
