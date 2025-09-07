@@ -45,7 +45,7 @@ export class Tag extends Document {
 }
 export const TagSchema = SchemaFactory.createForClass(Tag);
 
-@Schema()
+@Schema({ timestamps: true })
 export class Article extends Document {
   @Prop({ required: true, unique: true })
   articleSlug: string;
@@ -73,5 +73,8 @@ export class Article extends Document {
 
   @Prop({ required: true })
   article: string;
+
+  @Prop({ required: true })
+  articleReadingTime: number;
 }
 export const ArticleSchema = SchemaFactory.createForClass(Article);

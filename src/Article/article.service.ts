@@ -2,7 +2,6 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  Type,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Article, Category, Tag } from './article.schema';
@@ -55,6 +54,8 @@ export class ArticleService {
 
   async postArticle(article: ArticleDTO): Promise<Article> {
     try {
+      // === Category ===
+
       let categoryId: Types.ObjectId;
 
       if (typeof article.articleCategory === 'string') {
@@ -79,6 +80,8 @@ export class ArticleService {
         }
         categoryId = category._id as Types.ObjectId;
       }
+
+      // === Tag ===
 
       let tagIds: Types.ObjectId[] = [];
 
@@ -105,6 +108,14 @@ export class ArticleService {
         }
       }
 
+      // === Reading Time ===
+
+      const words = article.article.split(/\s+/).length;
+      const wordsPerMinut = 160;
+      const articleReadingTime = Math.ceil(words / wordsPerMinut);
+
+      // === Article ===
+
       const newArticle = new this.articleModel({
         articleSlug: article.articleSlug,
         articleTitle: article.articleTitle,
@@ -115,6 +126,7 @@ export class ArticleService {
         articleImgAlt: article.articleImgAlt,
         articleH1: article.articleH1,
         article: article.article,
+        articleReadingTime,
       });
 
       return await newArticle.save();
