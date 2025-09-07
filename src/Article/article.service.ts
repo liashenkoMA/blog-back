@@ -145,7 +145,7 @@ export class ArticleService {
       const article = await this.articleModel
         .findOne({ articleSlug: slug })
         .populate('articleCategory')
-        .populate('articleTags')
+        .populate({ path: 'articleTags', model: 'Tag' })
         .exec();
 
       if (!article) {
@@ -168,7 +168,7 @@ export class ArticleService {
       const articles = await this.articleModel
         .find()
         .populate('articleCategory')
-        .populate('articleTags')
+        .populate({ path: 'articleTags', model: 'Tag' })
         .exec();
 
       if (!articles || articles.length === 0) {

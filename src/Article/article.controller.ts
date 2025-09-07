@@ -42,7 +42,7 @@ export class ArticleController {
     return this.articleService.getArticle(slug);
   }
 
-    @Get()
+  @Get()
   async getArticles() {
     return this.articleService.getArticles();
   }
