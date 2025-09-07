@@ -1,19 +1,66 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+
+@Schema()
+export class Category extends Document {
+  @Prop({ required: true, unique: true })
+  categorySlug: string;
+
+  @Prop({ required: true })
+  categoryName: string;
+
+  @Prop({ required: true })
+  categoryImage: string;
+
+  @Prop({ required: true })
+  categoryImageAlt: string;
+
+  @Prop({ required: true })
+  categoryTitle: string;
+
+  @Prop({ required: true })
+  categoryDescription: string;
+}
+export const CategorySchema = SchemaFactory.createForClass(Category);
+
+@Schema()
+export class Tag extends Document {
+  @Prop({ required: true, unique: true })
+  tagSlug: string;
+
+  @Prop({ required: true })
+  tagName: string;
+
+  @Prop({ required: true })
+  tagImage: string;
+
+  @Prop({ required: true })
+  tagImageAlt: string;
+
+  @Prop({ required: true })
+  tagTitle: string;
+
+  @Prop({ required: true })
+  tagDescription: string;
+}
+export const TagSchema = SchemaFactory.createForClass(Tag);
 
 @Schema()
 export class Article extends Document {
-  @Prop({ required: true })
-  slug: string;
+  @Prop({ required: true, unique: true })
+  articleSlug: string;
 
   @Prop({ required: true })
-  title: string;
+  articleTitle: string;
 
   @Prop({ required: true })
-  description: string;
+  articleDescription: string;
 
-  @Prop({ required: true })
-  category: string;
+  @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
+  articleCategory: Types.ObjectId;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Tag' }] })
+  articleTags: Types.ObjectId[];
 
   @Prop({ required: true })
   articleImg: string;
@@ -27,5 +74,4 @@ export class Article extends Document {
   @Prop({ required: true })
   article: string;
 }
-
 export const ArticleSchema = SchemaFactory.createForClass(Article);
