@@ -29,6 +29,27 @@ export class ArticleService {
     }
   }
 
+  async getCategory(slug: string): Promise<Category> {
+    try {
+      const category = await this.categoryModel
+        .findOne({ categorySlug: slug })
+        .exec();
+
+      if (!category) {
+        throw new NotFoundException(`Категория с slug "${slug}" не найдена`);
+      }
+
+      return category;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Ошибка при получении категории: ${error.message}`,
+      );
+    }
+  }
+
   async getCategories(): Promise<Category[]> {
     return this.categoryModel.find().exec();
   }
@@ -167,6 +188,36 @@ export class ArticleService {
     try {
       const articles = await this.articleModel
         .find()
+        .populate('articleCategory')
+        .populate({ path: 'articleTags', model: 'Tag' })
+        .exec();
+
+      if (!articles || articles.length === 0) {
+        throw new NotFoundException('Статьи не найдены');
+      }
+
+      return articles;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Ошибка при получении статей: ${error.message}`,
+      );
+    }
+  }
+
+  async getCategoryArticles(slug: string): Promise<Article[]> {
+    try {
+      const category = await this.categoryModel
+        .findOne({ categorySlug: slug })
+        .exec();
+      if (!category) {
+        throw new NotFoundException(`Категория "${slug}" не найдена`);
+      }
+
+      const articles = await this.articleModel
+        .find({ articleCategory: category._id })
         .populate('articleCategory')
         .populate({ path: 'articleTags', model: 'Tag' })
         .exec();

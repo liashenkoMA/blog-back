@@ -13,6 +13,11 @@ export class ArticleController {
     return this.articleService.postCategory(category);
   }
 
+  @Get('categories/:slug')
+  async getCategory(@Param('slug') slug: string) {
+    return this.articleService.getCategory(slug);
+  }
+
   @Get('categories')
   async getCategories() {
     return this.articleService.getCategories();
@@ -45,5 +50,10 @@ export class ArticleController {
   @Get()
   async getArticles() {
     return this.articleService.getArticles();
+  }
+
+  @Get('category/:slug')
+  async getCategoryArticles(@Param('slug') slug: string) {
+    return this.articleService.getCategoryArticles(slug);
   }
 }
