@@ -207,6 +207,30 @@ export class ArticleService {
     }
   }
 
+  async getLastArticles() {
+    try {
+      const lastArticles = await this.articleModel
+        .find()
+        .populate('articleCategory')
+        .sort({ createdAt: -1 })
+        .limit(4)
+        .exec();
+
+      if (!lastArticles || lastArticles.length === 0) {
+        throw new NotFoundException('Опубликованные статьи не найдены');
+      }
+
+      return lastArticles;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Ошибка при получении статей: ${error.message}`,
+      );
+    }
+  }
+
   async getCategoryArticles(slug: string): Promise<Article[]> {
     try {
       const category = await this.categoryModel

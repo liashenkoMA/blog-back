@@ -42,6 +42,11 @@ export class ArticleController {
     return this.articleService.postArticle(article);
   }
 
+  @Get('last')
+  async getLastArticles() {
+    return this.articleService.getLastArticles();
+  }
+
   @Get(':slug')
   async getArticle(@Param('slug') slug: string) {
     return this.articleService.getArticle(slug);
