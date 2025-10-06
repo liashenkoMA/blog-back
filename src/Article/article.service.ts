@@ -67,6 +67,25 @@ export class ArticleService {
     }
   }
 
+  async getTag(slug: string): Promise<Tag> {
+    try {
+      const tag = await this.tagModel.findOne({ tagSlug: slug }).exec();
+
+      if (!tag) {
+        throw new NotFoundException(`Тэг со slug "${slug}" не найден`);
+      }
+
+      return tag;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Ошибка при создании тэга: ${error.message}`,
+      );
+    }
+  }
+
   async getTags(): Promise<Tag[]> {
     return this.tagModel.find().exec();
   }
@@ -75,7 +94,7 @@ export class ArticleService {
 
   async postArticle(article: ArticleDTO): Promise<Article> {
     try {
-      // === Category ===
+      // === category ===
 
       let categoryId: Types.ObjectId;
 
@@ -102,7 +121,7 @@ export class ArticleService {
         categoryId = category._id as Types.ObjectId;
       }
 
-      // === Tag ===
+      // === tag ===
 
       let tagIds: Types.ObjectId[] = [];
 
@@ -129,13 +148,13 @@ export class ArticleService {
         }
       }
 
-      // === Reading Time ===
+      // === reading Time ===
 
       const words = article.article.split(/\s+/).length;
       const wordsPerMinut = 160;
       const articleReadingTime = Math.ceil(words / wordsPerMinut);
 
-      // === Article ===
+      // === article ===
 
       const newArticle = new this.articleModel({
         articleSlug: article.articleSlug,
@@ -236,8 +255,9 @@ export class ArticleService {
       const category = await this.categoryModel
         .findOne({ categorySlug: slug })
         .exec();
+
       if (!category) {
-        throw new NotFoundException(`Категория "${slug}" не найдена`);
+        throw new NotFoundException(`Категория со slug "${slug}" не найдена`);
       }
 
       const articles = await this.articleModel
@@ -248,6 +268,35 @@ export class ArticleService {
 
       if (!articles || articles.length === 0) {
         throw new NotFoundException('Статьи не найдены');
+      }
+
+      return articles;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Ошибка при получении статей: ${error.message}`,
+      );
+    }
+  }
+
+  async getTagArticles(slug: string): Promise<Article[]> {
+    try {
+      const tag = await this.tagModel.findOne({ tagSlug: slug }).exec();
+
+      if (!tag) {
+        throw new NotFoundException(`Тэг со slug "${slug}" не найден`);
+      }
+
+      const articles = await this.articleModel
+        .find({ articleTags: tag._id })
+        .populate('articleCategory')
+        .populate({ path: 'articleTags', model: 'Tag' })
+        .exec();
+
+      if (!articles || articles.length === 0) {
+        throw new NotFoundException(`Статьи с тэгом "${slug}" не найдены`);
       }
 
       return articles;

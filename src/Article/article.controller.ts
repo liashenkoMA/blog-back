@@ -30,6 +30,11 @@ export class ArticleController {
     return this.articleService.postTag(tag);
   }
 
+  @Get('tags/:slug')
+  async getTag(@Param('slug') slug: string) {
+    return this.articleService.getTag(slug);
+  }
+
   @Get('tags')
   async getTags() {
     return this.articleService.getTags();
@@ -57,8 +62,13 @@ export class ArticleController {
     return this.articleService.getArticles();
   }
 
-  @Get('category/:slug')
+  @Get('categoryarticles/:slug')
   async getCategoryArticles(@Param('slug') slug: string) {
     return this.articleService.getCategoryArticles(slug);
+  }
+
+  @Get('tagsarticles/:slug')
+  async getTagArticles(@Param('slug') slug: string) {
+    return this.articleService.getTagArticles(slug);
   }
 }
