@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { ArticleDTO, CategoryDTO, TagDTO } from './article.schema.dto';
 
@@ -58,17 +58,23 @@ export class ArticleController {
   }
 
   @Get()
-  async getArticles() {
-    return this.articleService.getArticles();
+  async getBlogQueryArticles(@Query('page') page: number) {
+    return this.articleService.getBlogQueryArticles(page);
   }
 
   @Get('categoryarticles/:slug')
-  async getCategoryArticles(@Param('slug') slug: string) {
-    return this.articleService.getCategoryArticles(slug);
+  async getCategoryArticles(
+    @Param('slug') slug: string,
+    @Query('page') page: number,
+  ) {
+    return this.articleService.getCategoryArticles(slug, page);
   }
 
   @Get('tagsarticles/:slug')
-  async getTagArticles(@Param('slug') slug: string) {
-    return this.articleService.getTagArticles(slug);
+  async getTagArticles(
+    @Param('slug') slug: string,
+    @Query('page') page: number,
+  ) {
+    return this.articleService.getTagArticles(slug, page);
   }
 }

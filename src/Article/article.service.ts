@@ -203,19 +203,30 @@ export class ArticleService {
     }
   }
 
-  async getArticles(): Promise<Article[]> {
+  async getBlogQueryArticles(page: number): Promise<{
+    articles: Article[];
+    totalCount: number;
+  }> {
     try {
+      const limit = 6;
+      const skip = (page - 1) * limit;
+
       const articles = await this.articleModel
         .find()
         .populate('articleCategory')
         .populate({ path: 'articleTags', model: 'Tag' })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
         .exec();
+
+      const totalCount = await this.articleModel.countDocuments().exec();
 
       if (!articles || articles.length === 0) {
         throw new NotFoundException('Статьи не найдены');
       }
 
-      return articles;
+      return { articles, totalCount };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -250,7 +261,10 @@ export class ArticleService {
     }
   }
 
-  async getCategoryArticles(slug: string): Promise<Article[]> {
+  async getCategoryArticles(
+    slug: string,
+    page: number,
+  ): Promise<{ articles: Article[]; totalCount: number }> {
     try {
       const category = await this.categoryModel
         .findOne({ categorySlug: slug })
@@ -260,17 +274,27 @@ export class ArticleService {
         throw new NotFoundException(`Категория со slug "${slug}" не найдена`);
       }
 
+      const limit = 6;
+      const skip = (page - 1) * limit;
+
       const articles = await this.articleModel
         .find({ articleCategory: category._id })
         .populate('articleCategory')
         .populate({ path: 'articleTags', model: 'Tag' })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .skip(skip)
+        .exec();
+
+      const totalCount = await this.articleModel
+        .countDocuments({ articleCategory: category._id })
         .exec();
 
       if (!articles || articles.length === 0) {
         throw new NotFoundException('Статьи не найдены');
       }
 
-      return articles;
+      return { articles, totalCount };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -281,7 +305,10 @@ export class ArticleService {
     }
   }
 
-  async getTagArticles(slug: string): Promise<Article[]> {
+  async getTagArticles(
+    slug: string,
+    page: number,
+  ): Promise<{ articles: Article[]; totalCount: number }> {
     try {
       const tag = await this.tagModel.findOne({ tagSlug: slug }).exec();
 
@@ -289,17 +316,27 @@ export class ArticleService {
         throw new NotFoundException(`Тэг со slug "${slug}" не найден`);
       }
 
+      const limit = 6;
+      const skip = (page - 1) * limit;
+
       const articles = await this.articleModel
         .find({ articleTags: tag._id })
         .populate('articleCategory')
         .populate({ path: 'articleTags', model: 'Tag' })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .skip(skip)
+        .exec();
+
+      const totalCount = await this.articleModel
+        .countDocuments({ articleTags: tag._id })
         .exec();
 
       if (!articles || articles.length === 0) {
         throw new NotFoundException(`Статьи с тэгом "${slug}" не найдены`);
       }
 
-      return articles;
+      return { articles, totalCount };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
