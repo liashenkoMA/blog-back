@@ -123,7 +123,7 @@ export class ArticleService {
 
       // === tag ===
 
-      let tagIds: Types.ObjectId[] = [];
+      const tagIds: Types.ObjectId[] = [];
 
       for (const tag of article.articleTags) {
         if (typeof tag === 'string') {
@@ -199,6 +199,32 @@ export class ArticleService {
       }
       throw new InternalServerErrorException(
         `Ошибка при получении статьи: ${error.message}`,
+      );
+    }
+  }
+
+  async getAllArticles(): Promise<{ articles: Article[]; totalCount: number }> {
+    try {
+      const articles = await this.articleModel
+        .find()
+        .populate('articleCategory')
+        .populate({ path: 'articleTags', model: 'Tag' })
+        .sort({ createdAt: -1 })
+        .exec();
+
+      const totalCount = await this.articleModel.countDocuments().exec();
+
+      if (!articles || articles.length === 0) {
+        throw new NotFoundException('Статьи не найдены');
+      }
+
+      return { articles, totalCount };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Ошибка при получении статей: ${error.message}`,
       );
     }
   }

@@ -58,6 +58,11 @@ export class ArticleController {
   }
 
   @Get()
+  async getAllArticles() {
+    return this.articleService.getAllArticles();
+  }
+
+  @Get()
   async getBlogQueryArticles(@Query('page') page: number) {
     return this.articleService.getBlogQueryArticles(page);
   }
