@@ -94,7 +94,7 @@ export class ArticleService {
 
   async postArticle(article: ArticleDTO): Promise<Article> {
     try {
-      // === category ===
+      // Category
 
       let categoryId: Types.ObjectId;
 
@@ -108,6 +108,7 @@ export class ArticleService {
             `Category ${article.articleCategory} not found`,
           );
         }
+
         categoryId = category._id as Types.ObjectId;
       } else {
         let category = await this.categoryModel.findOne({
@@ -118,10 +119,11 @@ export class ArticleService {
           category = new this.categoryModel(article.articleCategory);
           await category.save();
         }
+
         categoryId = category._id as Types.ObjectId;
       }
 
-      // === tag ===
+      // Tag
 
       const tagIds: Types.ObjectId[] = [];
 
@@ -148,13 +150,13 @@ export class ArticleService {
         }
       }
 
-      // === reading Time ===
+      // Reading Time
 
       const words = article.article.split(/\s+/).length;
       const wordsPerMinut = 160;
       const articleReadingTime = Math.ceil(words / wordsPerMinut);
 
-      // === article ===
+      // Article
 
       const newArticle = new this.articleModel({
         articleSlug: article.articleSlug,
